@@ -713,6 +713,35 @@ bool uploadData(uint8_t service)
     return sender.sendBrewblox(my_server, my_port, my_uri, my_username, my_password, my_name);
   }
 #endif
+
+#ifdef API_UBIBREWF
+  if (service == DTUBIBREWF)
+  {
+    sender.add("tilt", Tilt);
+    sender.add("temperature", scaleTemperature(Temperatur));
+    sender.add("battery", Volt);
+    sender.add("gravity", Gravity);
+    sender.add("interval", my_sleeptime);
+    sender.add("RSSI", WiFi.RSSI());
+    CONSOLELN(F("\ncalling Ubidots"));
+    sender.sendUbidots(my_token, my_name);
+
+    String BFname = my_name;
+    BFname += "[SG]";
+    sender.add("name", BFname);
+    sender.add("ID", ESP.getChipId());
+    // if (my_token[0] != 0)
+    //  sender.add("token", my_token);
+    sender.add("angle", Tilt);
+    sender.add("temp_units", tempScaleLabel());
+    sender.add("RSSI", WiFi.RSSI());
+    CONSOLELN(F("\ncalling BrewFather"));
+    sender.sendGenericPost(my_server, my_uri, my_port);
+
+    return true;
+
+  }
+#endif
   return false;
 }
 
